@@ -400,6 +400,15 @@ public class Email : Message, IDisposable
     /// </summary>
     internal void WriteToStorage()
     {
+        WriteToStorage(Encoding.UTF8);
+    }
+
+    /// <summary>
+    ///     Writes all the properties that are part of the <see cref="Email"/> object either as <see cref="CFStorage"/>'s
+    ///     or <see cref="CFStream"/>'s to the <see cref="CompoundFile.RootStorage"/>
+    /// </summary>
+    internal void WriteToStorage(Encoding encoding)
+    {
         var rootStorage = CompoundFile.RootStorage;
 
         if (Class == MessageClass.Unknown)
@@ -454,7 +463,7 @@ public class Email : Message, IDisposable
         if (attachmentCount > 0)
             messageFlags |= MessageFlags.MSGFLAG_HASATTACH;
 
-        TopLevelProperties.AddProperty(PropertyTags.PR_INTERNET_CPID, Encoding.UTF8.CodePage);
+        TopLevelProperties.AddProperty(PropertyTags.PR_INTERNET_CPID, encoding.CodePage);
 
         TopLevelProperties.AddProperty(PropertyTags.PR_BODY_W, BodyText);
 
@@ -592,7 +601,7 @@ public class Email : Message, IDisposable
     /// <param name="stream"></param>
     public new void Save(Stream stream)
     {
-        WriteToStorage();
+        WriteToStorage(Encoding.UTF8);
         base.Save(stream);
     }
 
@@ -602,8 +611,30 @@ public class Email : Message, IDisposable
     /// <param name="fileName"></param>
     public new void Save(string fileName)
     {
-        WriteToStorage();
+        WriteToStorage(Encoding.UTF8);
         base.Save(fileName);
+    }
+
+    /// <summary>
+    ///     Saves the message to the given <paramref name="fileName" /> with the specified <paramref name="encoding" />
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="encoding"></param>
+    public void Save(string fileName, Encoding encoding)
+    {
+        WriteToStorage(encoding);
+        base.Save(fileName);
+    }
+
+    /// <summary>
+    ///     Saves the message to the given <paramref name="stream" /> with the specified <paramref name="encoding" />
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="encoding"></param>
+    public void Save(Stream stream, Encoding encoding)
+    {
+        WriteToStorage(encoding);
+        base.Save(stream);
     }
     #endregion
 
